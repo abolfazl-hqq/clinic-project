@@ -14,7 +14,7 @@ export default function Header() {
   return (
     <>
       <header className="border-b border-[#5D4FFF]/10 bg-white/95 backdrop-blur sticky top-0 z-50">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
           {/* Logo */}
           <a href="#home" className="flex items-center gap-3">
             <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#5D4FFF] text-lg font-bold text-white">
@@ -39,14 +39,8 @@ export default function Header() {
             ))}
           </nav>
 
-          {/* Buttons Container - Both buttons sit next to each other */}
+          {/* Buttons Container */}
           <div className="hidden md:flex items-center gap-3">
-            <a
-              href="#contact"
-              className="rounded-full bg-[#5D4FFF] px-4 py-2 text-md font-semibold text-white transition hover:bg-[#4b3fe8]"
-            >
-              رزرو نوبت
-            </a>
             <a
               href="tel:1234567"
               className="rounded-2xl bg-white shadow px-6 py-2 text-md font-semibold text-[#181443] transition-all duration-300 hover:-translate-y-1 inline-flex items-center gap-2 border border-gray-200"
@@ -66,6 +60,12 @@ export default function Header() {
                 <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
               </svg>
               ۰۲۱-۵۵۷۹۳
+            </a>
+            <a
+              href="#contact"
+              className="rounded-2xl shadow-2x bg-[#5D4FFF] px-4 py-2 text-md font-semibold text-white transition-all duration-300 hover:-translate-y-1 inline-flex items-center "
+            >
+              رزرو نوبت
             </a>
           </div>
 
@@ -157,7 +157,7 @@ export default function Header() {
                 <a
                   href="#contact"
                   onClick={() => setIsDrawerOpen(false)}
-                  className="rounded-full bg-[#5D4FFF] px-4 py-3 text-center text-md font-semibold text-white transition hover:bg-[#4b3fe8]"
+                  className="rounded-2xl bg-[#5D4FFF] px-4 py-3 text-center text-md font-semibold text-white transition hover:bg-[#4b3fe8]"
                 >
                   رزرو نوبت
                 </a>
