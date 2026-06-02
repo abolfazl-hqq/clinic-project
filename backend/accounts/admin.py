@@ -1,3 +1,15 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
+from .models import User
 
-# Register your models here.
+
+class CustomUserAdmin(UserAdmin):
+    list_display = ('username', 'get_full_name', 'phone', 'role', 'is_verified', 'is_active')
+    list_filter = ('role', 'is_verified', 'is_active')
+    search_fields = ('username', 'first_name', 'last_name', 'phone')
+    fieldsets = UserAdmin.fieldsets + (
+        ('اطلاعات اضافی', {'fields': ('role', 'phone', 'profile_picture_url', 'profile_picture', 'is_verified')}),
+    )
+
+
+admin.site.register(User, CustomUserAdmin)
