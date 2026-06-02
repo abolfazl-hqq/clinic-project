@@ -1,14 +1,13 @@
-import DentalInfoBar from "@/components/DentalInfo";
-import DentalInfo from "@/components/DentalInfo";
 import Header from "@/components/Header";
 import HeroSection from "@/components/Hero";
-import ServicesSection from "@/components/ServicesSection";
+import ServicesSlider from "@/components/ServicesSlider";
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-white text-slate-900">
       <Header />
       <HeroSection/>
+      <ServicesSlider/>
       <main id="home" className=" mx-auto max-w-6xl px-6 py-12">
       </main>
     </div>

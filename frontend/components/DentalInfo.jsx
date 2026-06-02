@@ -4,14 +4,14 @@ import { Mail, Clock, Tooth } from "lucide-react";
 
 function IconBadge({ children }) {
   return (
-    <div className="flex-shrink-0 w-16 h-16 rounded-[1.5rem] bg-[var(--primary)] flex items-center justify-center shadow-lg">
+    <div className="shrink-0 w-12 h-12 md:w-16 md:h-16 rounded-3xl bg-primary flex items-center justify-center shadow-lg">
       {children}
     </div>
   );
 }
 
 function Divider() {
-  return <div className="hidden md:block w-px self-stretch bg-[var(--border)] mx-3" />;
+  return <div className="hidden md:block w-px self-stretch bg-(--border) mx-3" />;
 }
 
 // ── ContactUs ────────────────────────────────────────────────────────────────
@@ -23,11 +23,11 @@ function ContactUs({
   onBooking,
 }) {
   return (
-    <div className="flex items-start gap-6 flex-1 py-8 px-8">
+    <div className="flex items-start gap-3 md:gap-6 flex-1 py-3 px-3 sm:px-4 md:py-8 md:px-8 min-w-0">
       <IconBadge>
         <Mail className="w-7 h-7 text-[var(--primary-foreground)]" strokeWidth={2} />
       </IconBadge>
-      <div>
+      <div className="min-w-0 flex-1">
         <p className="text-xl md:text-2xl font-bold text-[var(--foreground)] mb-2">تماس با ما</p>
         <p className="text-base md:text-lg text-[var(--muted)]">{phone}</p>
         <p className="text-base md:text-lg text-[var(--muted)] mb-3">{email}</p>
@@ -48,15 +48,15 @@ function OpenHours({
   hours = [
     { days: "دوشنبه تا جمعه", time: "۸:۰۰ تا ۱۷:۰۰" },
     { days: "شنبه", time: "۹:۰۰ تا ۱۵:۳۰" },
-    { days: "یکشنبه", time: "۹:۰۰ تا ۱۵:۳۰" },
+    { days: "بقیه روزها", time: "۹:۰۰ تا ۱۵:۰۰" },
   ],
 }) {
   return (
-    <div className="flex items-start gap-6 flex-1 py-8 px-8">
+    <div className="flex items-start gap-3 md:gap-6 flex-1 py-3 px-3 sm:px-4 md:py-8 md:px-8 min-w-0">
       <IconBadge>
         <Clock className="w-7 h-7 text-[var(--primary-foreground)]" strokeWidth={2} />
       </IconBadge>
-      <div>
+      <div className="min-w-0 flex-1">
         <p className="text-xl md:text-2xl font-bold text-[var(--foreground)] mb-2">ساعات کاری</p>
         {hours.map(({ days, time }) => (
           <p key={days} className="text-base md:text-lg text-[var(--foreground)]/85">
@@ -93,11 +93,11 @@ function Services({
   items = ["دندانپزشکی زیبایی", "ایمپلنت دندان", "سفید کردن دندان"],
 }) {
   return (
-    <div className="flex items-start gap-6 flex-1 py-8 px-8">
+    <div className="flex items-start gap-3 md:gap-6 flex-1 py-3 px-3 sm:px-4 md:py-8 md:px-8 min-w-0">
       <IconBadge>
         <ToothIcon className="w-7 h-7 text-[var(--primary-foreground)]" />
       </IconBadge>
-      <div>
+      <div className="min-w-0 flex-1">
         <p className="text-xl md:text-2xl font-bold text-[var(--foreground)] mb-2">خدمات</p>
         {items.map((item) => (
           <p key={item} className="text-base md:text-lg text-[var(--muted)]">
@@ -137,7 +137,7 @@ export default function DentalInfoBar({
     <div
       className={`w-full bg-[var(--background)] rounded-[2rem] shadow-2xl border border-[var(--border)] overflow-hidden ${className}`}
     >
-      <div className="flex flex-col md:flex-row text-base md:text-lg">
+      <div className="flex flex-col md:flex-row text-base md:text-lg gap-4 md:gap-0">
         <ContactUs {...contact} />
         <Divider />
         <OpenHours {...hours} />

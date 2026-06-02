@@ -5,10 +5,10 @@ import DentalInfoBar from './DentalInfo';
 const HeroSection = () => {
   return (
 
-    <div className="relative pb-24">
+    <div className="relative pb-12 md:pb-24">
 
       {/* ── Hero ── */}
-      <div className="relative flex flex-col md:flex-row min-h-screen overflow-hidden bg-white">
+      <div className="relative flex flex-col md:flex-row md:min-h-screen overflow-hidden bg-white">
         <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-primary/25 blur-3xl" />
 
         {/* Left Side */}
@@ -48,8 +48,8 @@ const HeroSection = () => {
         </div>
       </div>
 
-      {/* ── Floating InfoBar — sits half inside hero, half outside ── */}
-      <div className="absolute lg:bottom-25 left-1/2 -translate-x-1/2 translate-y-1/2 w-[90%] max-w-6xl z-20">
+      {/* ── DentalInfoBar — floating on lg, static on mobile ── */}
+      <div className="relative lg:absolute lg:left-1/2 lg:-translate-x-1/2 lg:bottom-20 w-[95%] sm:w-[90%] mx-auto lg:mx-0 max-w-6xl z-20 mt-8 lg:mt-0 lg:translate-y-1/2">
         <DentalInfoBar />
       </div>
 
