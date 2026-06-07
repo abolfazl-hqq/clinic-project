@@ -13,7 +13,7 @@ export default function Header() {
 
   return (
     <>
-      <header className="border-b border-[#5D4FFF]/10 bg-white/95 backdrop-blur sticky top-0 z-50">
+      <header className="border-b shadow border-[#5D4FFF]/10 bg-white/95 backdrop-blur sticky top-0 z-50">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
           {/* Logo */}
           <a href="#home" className="flex items-center gap-3">

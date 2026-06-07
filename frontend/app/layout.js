@@ -1,5 +1,7 @@
 import { Geist, Geist_Mono, Vazirmatn } from "next/font/google";
 import "./globals.css";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 const vazirmatn = Vazirmatn({
   subsets: ['latin', 'arabic'],
@@ -18,7 +20,11 @@ export default function RootLayout({ children }) {
       dir="rtl"
       className={`${vazirmatn.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <Header />
+        {children}
+        <Footer />
+      </body>
     </html>
   );
 }
