@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Image from "next/image"
 
 const navItems = [
   { label: "خانه", href: "#home" },
@@ -16,10 +17,8 @@ export default function Header() {
       <header className="border-b shadow border-[#5D4FFF]/10 bg-white/95 backdrop-blur sticky top-0 z-50">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
           {/* Logo */}
-          <a href="#home" className="flex items-center gap-3">
-            <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#5D4FFF] text-lg font-bold text-white">
-              C
-            </span>
+          <a href="#home" className="flex items-center gap-6">
+            <Image alt="clinic-icon" src={'/clinic-icon.jpg'} height={100} width={100} className="flex h-20 w-20 items-center justify-center rounded-xl"/>
             <div>
               <p className="text-2xl font-bold text-slate-900">کلینیک</p>
               <p className="text-sm text-slate-500">مراقب سلامت شما</p>

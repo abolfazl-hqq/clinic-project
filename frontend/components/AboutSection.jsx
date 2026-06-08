@@ -38,9 +38,6 @@ export default function AboutSection() {
       
       {/* Left: Stacked images */}
       <div className="relative w-full lg:-mr-12 lg:ml-12 md:w-1/2 flex-shrink-0">
-        {/* Decorative circle behind the card */}
-        <div className="absolute -left-10 top-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-[var(--primary)]/15 -z-10" />
-
         {/* Card containing two photos */}
         <div className="rounded-3xl overflow-hidden shadow-lg bg-[var(--background)]">
           {/* Top photo */}

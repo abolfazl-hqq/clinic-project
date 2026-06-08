@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import {
   FaFacebookF,
   FaTwitter,
@@ -151,16 +152,13 @@ export default function Footer() {
         </div>
 
         {/* Divider */}
-        <div className="my-12 h-px bg-border" />
+        <div className="mt-9 mb-3  h-px border-t border-[var(--border)]" />
 
         {/* Bottom Bar */}
         <div className="flex flex-col items-center justify-between gap-6 lg:flex-row">
           {/* Logo */}
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-[var(--primary)]">
-              <span className="text-xl">🦷</span>
-            </div>
-
+            <Image alt="clinic-icon" src={'/clinic-icon.jpg'} height={100} width={100} className="flex h-20 w-20 items-center justify-center"/>
             <span className="text-4xl font-bold text-foreground">
               کلینیک
             </span>
