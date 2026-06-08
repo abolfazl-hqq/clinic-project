@@ -42,7 +42,7 @@ export default function Header() {
           <div className="hidden md:flex items-center gap-3">
             <a
               href="tel:1234567"
-              className="rounded-2xl bg-white shadow px-6 py-2 text-md font-semibold text-[#181443] transition-all duration-300 hover:-translate-y-1 inline-flex items-center gap-2 border border-gray-200"
+              className="rounded-2xl bg-white shadow px-8 py-3 text-lg font-semibold text-[#181443] transition-all duration-300 hover:-translate-y-1 inline-flex items-center gap-2 border border-gray-200"
             >
               <svg 
                 xmlns="http://www.w3.org/2000/svg" 
@@ -62,7 +62,7 @@ export default function Header() {
             </a>
             <a
               href="#contact"
-              className="rounded-2xl shadow-2x bg-[#5D4FFF] px-4 py-2 text-md font-semibold text-white transition-all duration-300 hover:-translate-y-1 inline-flex items-center "
+              className="rounded-2xl shadow-2x bg-[#5D4FFF] px-6 py-3 text-lg font-semibold text-white transition-all duration-300 hover:-translate-y-1 inline-flex items-center "
             >
               رزرو نوبت
             </a>
