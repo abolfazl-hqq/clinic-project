@@ -1,0 +1,412 @@
+"use client";
+
+import { useState, useRef } from "react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/app/context/AuthContext";
+
+export default function LoginPage() {
+  const router = useRouter();
+  const { login, register } = useAuth();
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const loginIdentifierRef = useRef(null);
+  const emailRef = useRef(null);
+  const passwordRef = useRef(null);
+  const usernameRef = useRef(null);
+  const confirmPasswordRef = useRef(null);
+  const firstNameRef = useRef(null);
+  const lastNameRef = useRef(null);
+  const phoneRef = useRef(null);
+  const roleRef = useRef(null);
+
+  const getValue = (ref) => ref.current?.value.trim() || "";
+
+  async function handleLogin() {
+    setError("");
+    setLoading(true);
+    try {
+      const identifier = getValue(loginIdentifierRef);
+      const password = getValue(passwordRef);
+      const result = await login(identifier, password);
+      if (result.success) {
+        router.push("/");
+      } else {
+        setError(result.error?.detail || "خطا در ورود. لطفا اطلاعات را دوباره بررسی کنید.");
+      }
+    } catch (err) {
+      setError("خطا در ارتباط با سرور");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleSignUp() {
+    setError("");
+    const username = getValue(usernameRef);
+    const email = getValue(emailRef);
+    const password = getValue(passwordRef);
+    const confirmPassword = getValue(confirmPasswordRef);
+    const firstName = getValue(firstNameRef);
+    const lastName = getValue(lastNameRef);
+    const phone = getValue(phoneRef);
+    const role = roleRef.current?.value || "patient";
+
+    if (password !== confirmPassword) {
+      setError("رمز عبور با تکرار آن مطابقت ندارد");
+      return;
+    }
+    setLoading(true);
+    try {
+      const result = await register({
+        username,
+        email,
+        password,
+        password2: confirmPassword,
+        first_name: firstName,
+        last_name: lastName,
+        phone,
+        role,
+      });
+      if (result.success) {
+        router.push("/");
+      } else {
+        setError(result.error?.detail || result.error?.username?.[0] || "خطا در ثبت‌نام");
+      }
+    } catch (err) {
+      setError("خطا در ارتباط با سرور");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function switchToSignUp() {
+    setIsSignUp(true);
+    setError("");
+    if (passwordRef.current) passwordRef.current.value = "";
+    if (confirmPasswordRef.current) confirmPasswordRef.current.value = "";
+  }
+
+  function switchToLogin() {
+    setIsSignUp(false);
+    setError("");
+    if (passwordRef.current) passwordRef.current.value = "";
+    if (confirmPasswordRef.current) confirmPasswordRef.current.value = "";
+    if (usernameRef.current) usernameRef.current.value = "";
+    if (emailRef.current) emailRef.current.value = "";
+    if (firstNameRef.current) firstNameRef.current.value = "";
+    if (lastNameRef.current) lastNameRef.current.value = "";
+    if (phoneRef.current) phoneRef.current.value = "";
+    if (loginIdentifierRef.current) loginIdentifierRef.current.value = "";
+    if (roleRef.current) roleRef.current.value = "patient";
+  }
+
+  return (
+    <div className="h-screen lg:h-[calc(100vh-128px)] flex overflow-hidden bg-[color:var(--color-background)]">
+      {/* ─── LEFT PANEL ─────────────────────────────────────────────── */}
+      <div className="relative hidden md:flex w-1/2 flex-col justify-end">
+        <Image
+          src="/doctor-hero.jpg"
+          alt="Healthcare professional"
+          fill
+          className="object-cover"
+          priority
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[color:var(--color-primary)] via-[color:var(--color-primary)]/40 to-transparent" />
+        <div className="relative z-10 p-8 text-white">
+          <div className="flex items-center gap-2 mb-3">
+            <Image
+              src="/clinic-icon.jpg"
+              alt="clinic logo"
+              width={36}
+              height={36}
+              className="rounded-full"
+            />
+            <span className="font-bold text-lg tracking-widest uppercase">
+              کلینیک
+            </span>
+          </div>
+          <p className="text-sm text-white/80 leading-relaxed max-w-xs">
+            سلامت شما در اولویت است. با خدمات ما، دسترسی آسان و امن به مراقبت‌های پزشکی خواهید داشت.
+          </p>
+        </div>
+      </div>
+
+      {/* ─── RIGHT PANEL ────────────────────────────────── */}
+      <div className="flex flex-col justify-center w-full md:w-1/2 bg-[color:var(--color-background)] px-8 md:px-16 py-8 md:py-14 overflow-y-auto">
+
+        <div className="mb-8">
+          <Image
+            src="/clinic-icon.jpg"
+            alt="clinic icon"
+            width={48}
+            height={48}
+            className="rounded-full"
+          />
+        </div>
+
+        <h1 className="text-3xl font-bold text-[color:var(--color-foreground)] mb-1">
+          {isSignUp ? "ایجاد حساب کاربری" : "ورود به حساب"}
+        </h1>
+        <p className="text-sm text-[color:var(--color-muted)] mb-6">
+          {isSignUp
+            ? "اطلاعات خود را وارد کنید تا حساب جدیدی برای شما ایجاد شود."
+            : "برای دسترسی به خدمات کلینیک، اطلاعات حساب خود را وارد کنید."}
+        </p>
+
+        {/* Error Message */}
+        {error && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+            {error}
+          </div>
+        )}
+
+        {/* Login: Use username or email ─ Sign up: Additional fields */}
+        {!isSignUp && (
+          <div className="mb-4">
+            <label
+              htmlFor="loginUsername"
+              className="block text-sm font-medium text-[color:var(--color-foreground)] mb-1"
+            >
+              نام کاربری یا ایمیل
+            </label>
+            <input
+              id="loginUsername"
+              ref={loginIdentifierRef}
+              type="text"
+              placeholder="نام کاربری یا ایمیل خود را وارد کنید"
+              defaultValue=""
+              className="w-full border rounded-lg px-4 py-3 text-sm text-[color:var(--color-foreground)] placeholder:text-[color:var(--color-muted)] outline-none transition focus:ring-2 focus:ring-[color:var(--color-primary)] focus:border-transparent border-[color:var(--border)] bg-[color:var(--color-background)]"
+            />
+          </div>
+        )}
+
+        {/* Sign up fields */}
+        {isSignUp && (
+          <>
+            <div className="mb-4">
+              <label
+                htmlFor="username"
+                className="block text-sm font-medium text-[color:var(--color-foreground)] mb-1"
+              >
+                نام کاربری
+              </label>
+              <input
+                id="username"
+                ref={usernameRef}
+                type="text"
+                placeholder="نام کاربری خود را وارد کنید"
+                defaultValue=""
+                className="w-full border rounded-lg px-4 py-3 text-sm text-[color:var(--color-foreground)] placeholder:text-[color:var(--color-muted)] outline-none transition focus:ring-2 focus:ring-[color:var(--color-primary)] focus:border-transparent border-[color:var(--border)] bg-[color:var(--color-background)]"
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-[color:var(--color-foreground)] mb-1"
+              >
+                ایمیل
+              </label>
+              <input
+                id="email"
+                ref={emailRef}
+                type="email"
+                placeholder="ایمیل خود را وارد کنید"
+                defaultValue=""
+                className="w-full border rounded-lg px-4 py-3 text-sm text-[color:var(--color-foreground)] placeholder:text-[color:var(--color-muted)] outline-none transition focus:ring-2 focus:ring-[color:var(--color-primary)] focus:border-transparent border-[color:var(--border)] bg-[color:var(--color-background)]"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              <div>
+                <label
+                  htmlFor="firstName"
+                  className="block text-sm font-medium text-[color:var(--color-foreground)] mb-1"
+                >
+                  نام
+                </label>
+                <input
+                  id="firstName"
+                  ref={firstNameRef}
+                  type="text"
+                  placeholder="نام شما"
+                  defaultValue=""
+                  className="w-full border rounded-lg px-4 py-3 text-sm text-[color:var(--color-foreground)] placeholder:text-[color:var(--color-muted)] outline-none transition focus:ring-2 focus:ring-[color:var(--color-primary)] focus:border-transparent border-[color:var(--border)] bg-[color:var(--color-background)]"
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="lastName"
+                  className="block text-sm font-medium text-[color:var(--color-foreground)] mb-1"
+                >
+                  نام خانوادگی
+                </label>
+                <input
+                  id="lastName"
+                  ref={lastNameRef}
+                  type="text"
+                  placeholder="نام خانوادگی"
+                  defaultValue=""
+                  className="w-full border rounded-lg px-4 py-3 text-sm text-[color:var(--color-foreground)] placeholder:text-[color:var(--color-muted)] outline-none transition focus:ring-2 focus:ring-[color:var(--color-primary)] focus:border-transparent border-[color:var(--border)] bg-[color:var(--color-background)]"
+                />
+              </div>
+            </div>
+
+            <div className="mb-4">
+              <label
+                htmlFor="phone"
+                className="block text-sm font-medium text-[color:var(--color-foreground)] mb-1"
+              >
+                شماره تلفن
+              </label>
+              <input
+                id="phone"
+                ref={phoneRef}
+                type="tel"
+                placeholder="09123456789"
+                defaultValue=""
+                className="w-full border rounded-lg px-4 py-3 text-sm text-[color:var(--color-foreground)] placeholder:text-[color:var(--color-muted)] outline-none transition focus:ring-2 focus:ring-[color:var(--color-primary)] focus:border-transparent border-[color:var(--border)] bg-[color:var(--color-background)]"
+              />
+            </div>
+
+            <div className="mb-4">
+              <label
+                htmlFor="role"
+                className="block text-sm font-medium text-[color:var(--color-foreground)] mb-1"
+              >
+                نوع حساب
+              </label>
+              <select
+                id="role"
+                ref={roleRef}
+                defaultValue="patient"
+                className="w-full border rounded-lg px-4 py-3 text-sm text-[color:var(--color-foreground)] outline-none transition focus:ring-2 focus:ring-[color:var(--color-primary)] focus:border-transparent border-[color:var(--border)] bg-[color:var(--color-background)]"
+              >
+                <option value="patient">بیمار</option>
+                <option value="doctor">پزشک</option>
+              </select>
+            </div>
+          </>
+        )}
+
+        {/* ── Password field ── */}
+        <div className={isSignUp ? "mb-4" : "mb-2"}>
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-[color:var(--color-foreground)] mb-1"
+          >
+            رمز عبور
+          </label>
+          <div className="relative">
+            <input
+              id="password"
+              ref={passwordRef}
+              type={showPassword ? "text" : "password"}
+              placeholder="رمز عبور خود را وارد کنید"
+              defaultValue=""
+              className="w-full border rounded-lg px-4 py-3 pr-11 text-sm text-[color:var(--color-foreground)] placeholder:text-[color:var(--color-muted)] outline-none transition focus:ring-2 focus:ring-[color:var(--color-primary)] focus:border-transparent border-[color:var(--border)] bg-white"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-[color:var(--color-muted)] hover:text-[color:var(--color-foreground)] transition"
+              aria-label={showPassword ? "پنهان کردن رمز عبور" : "نمایش رمز عبور"}
+            >
+              {showPassword ? (
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-5 0-9-4-9-7s4-7 9-7c1.06 0 2.08.175 3.025.5M15 12a3 3 0 01-3 3m6.364-5.364A9.956 9.956 0 0121 12c0 3-4 7-9 7m0 0L3 3m18 18L3 3" />
+                </svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* ── Confirm Password field (sign-up only) ── */}
+        {isSignUp && (
+          <div className="mb-2">
+            <label
+              htmlFor="confirmPassword"
+              className="block text-sm font-medium text-[color:var(--color-foreground)] mb-1"
+            >
+              تکرار رمز عبور
+            </label>
+            <div className="relative">
+              <input
+                id="confirmPassword"
+                ref={confirmPasswordRef}
+                type={showConfirmPassword ? "text" : "password"}
+                placeholder="رمز عبور را دوباره وارد کنید"
+                defaultValue=""
+                className="w-full border rounded-lg px-4 py-3 pr-11 text-sm text-[color:var(--color-foreground)] placeholder:text-[color:var(--color-muted)] outline-none transition focus:ring-2 focus:ring-[color:var(--color-primary)] focus:border-transparent border-[color:var(--border)] bg-white"
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword((prev) => !prev)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[color:var(--color-muted)] hover:text-[color:var(--color-foreground)] transition"
+                aria-label={showConfirmPassword ? "پنهان کردن رمز عبور" : "نمایش رمز عبور"}
+              >
+                {showConfirmPassword ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-5 0-9-4-9-7s4-7 9-7c1.06 0 2.08.175 3.025.5M15 12a3 3 0 01-3 3m6.364-5.364A9.956 9.956 0 0121 12c0 3-4 7-9 7m0 0L3 3m18 18L3 3" />
+                  </svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                )}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Forgot Password link (login only) */}
+        {!isSignUp && (
+          <div className="text-right mb-6">
+            <a
+              href="#"
+              className="text-sm font-medium text-[color:var(--color-primary)] hover:underline"
+            >
+              فراموشی رمز عبور؟
+            </a>
+          </div>
+        )}
+
+        {/* Spacer for sign-up mode */}
+        {isSignUp && <div className="mb-4" />}
+
+        {/* ── Primary action button ── */}
+        <button
+          onClick={isSignUp ? handleSignUp : handleLogin}
+          disabled={loading}
+          className="w-full bg-[color:var(--color-primary)] text-[color:var(--color-primary-foreground)] font-medium py-3 rounded-full hover:opacity-90 active:scale-[0.98] transition mb-3 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {loading ? (isSignUp ? "در حال ثبت‌نام..." : "در حال ورود...") : (isSignUp ? "ثبت نام" : "ورود")}
+        </button>
+
+        {/* Toggle between login and sign-up */}
+        <p className="text-center text-sm text-[color:var(--color-muted)]">
+          {isSignUp ? "قبلاً حساب کاربری دارید؟" : "هنوز حساب کاربری ندارید؟"}{" "}
+          <button
+            type="button"
+            onClick={isSignUp ? switchToLogin : switchToSignUp}
+            className="font-medium text-[color:var(--color-primary)] hover:underline bg-transparent border-none cursor-pointer p-0"
+          >
+            {isSignUp ? "ورود" : "ثبت نام"}
+          </button>
+        </p>
+      </div>
+    </div>
+  );
+}

@@ -1,6 +1,9 @@
 "use client";
 import { useState } from "react";
 import Image from "next/image"
+import Link from "next/link"
+import { useAuth } from "@/app/context/AuthContext";
+import { useRouter } from "next/navigation";
 
 const navItems = [
   { label: "خانه", href: "#home" },
@@ -11,19 +14,30 @@ const navItems = [
 
 export default function Header() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const { user, isAuthenticated, logout } = useAuth();
+  const router = useRouter();
+
+  const displayName = user ? (user.full_name || `${user.first_name} ${user.last_name}` || user.username) : "";
+
+  const handleLogout = () => {
+    logout();
+    setIsUserMenuOpen(false);
+    router.push("/");
+  };
 
   return (
     <>
       <header className="border-b shadow border-[#5D4FFF]/10 bg-white/95 backdrop-blur sticky top-0 z-50">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
           {/* Logo */}
-          <a href="#home" className="flex items-center gap-6">
+          <Link href="/" className="flex items-center gap-6">
             <Image alt="clinic-icon" src={'/clinic-icon.jpg'} height={100} width={100} className="flex h-20 w-20 items-center justify-center rounded-xl"/>
             <div>
               <p className="text-2xl font-bold text-slate-900">کلینیک</p>
               <p className="text-sm text-slate-500">مراقب سلامت شما</p>
             </div>
-          </a>
+          </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden items-center gap-8 md:flex">
@@ -38,34 +52,76 @@ export default function Header() {
             ))}
           </nav>
 
-          {/* Buttons Container */}
+          {/* Buttons Container / User Menu */}
           <div className="hidden md:flex items-center gap-3">
-            <a
-              href="tel:1234567"
-              className="rounded-2xl bg-white shadow px-8 py-3 text-lg font-semibold text-[#181443] transition-all duration-300 hover:-translate-y-1 inline-flex items-center gap-2 border border-gray-200"
-            >
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                width="18" 
-                height="18" 
-                viewBox="0 0 24 24" 
-                fill="none"
-                stroke="#5D4FFF" 
-                strokeWidth="2"
-                strokeLinecap="round" 
-                strokeLinejoin="round"
-                className="shrink-0"
-              >
-                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-              </svg>
-              ۰۲۱-۵۵۷۹۳
-            </a>
-            <a
-              href="#contact"
-              className="rounded-2xl shadow-2x bg-[#5D4FFF] px-6 py-3 text-lg font-semibold text-white transition-all duration-300 hover:-translate-y-1 inline-flex items-center "
-            >
-              رزرو نوبت
-            </a>
+            {isAuthenticated && user ? (
+              <div className="relative">
+                <button
+                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  className="rounded-2xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-gray-50 inline-flex items-center gap-2"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#5D4FFF]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5.121 17.804A8.966 8.966 0 0112 15c2.21 0 4.24.896 5.879 2.358M15 10a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  <span>{displayName}</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" className={`w-4 h-4 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                  </svg>
+                </button>
+
+                {/* User Dropdown Menu */}
+                {isUserMenuOpen && (
+                  <div className="absolute left-0 top-full mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+                    <div className="px-4 py-3 border-b border-gray-100">
+                      <p className="text-sm font-medium text-gray-700">{displayName}</p>
+                      <p className="text-xs text-gray-500">{user.email}</p>
+                    </div>
+                    <Link
+                      href="/profile"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition"
+                      onClick={() => setIsUserMenuOpen(false)}
+                    >
+                      پروفایل
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full text-right px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition border-t border-gray-100"
+                    >
+                      خروج
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <>
+                <a
+                  href="tel:1234567"
+                  className="rounded-2xl bg-white shadow px-8 py-3 text-lg font-semibold text-[#181443] transition-all duration-300 hover:-translate-y-1 inline-flex items-center gap-2 border border-gray-200"
+                >
+                  <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    width="18" 
+                    height="18" 
+                    viewBox="0 0 24 24" 
+                    fill="none"
+                    stroke="#5D4FFF" 
+                    strokeWidth="2"
+                    strokeLinecap="round" 
+                    strokeLinejoin="round"
+                    className="shrink-0"
+                  >
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                  </svg>
+                  ۰۲۱-۵۵۷۹۳
+                </a>
+                <Link
+                  href="/auth"
+                  className="rounded-2xl shadow-2x bg-[#5D4FFF] px-6 py-3 text-lg font-semibold text-white transition-all duration-300 hover:-translate-y-1 inline-flex items-center "
+                >
+                  ورود
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -101,7 +157,7 @@ export default function Header() {
         >
           {/* Drawer Content */}
           <div
-            className="fixed right-0 top-0 h-full w-80 bg-white shadow-2xl animate-slide-in"
+            className="fixed right-0 top-0 h-full w-80 bg-white shadow-2xl animate-slide-in overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Drawer Header */}
@@ -136,6 +192,14 @@ export default function Header() {
               </button>
             </div>
 
+            {/* User Info (if logged in) */}
+            {isAuthenticated && user && (
+              <div className="px-6 py-4 shadow border-b border-gray-200 bg-gray-50">
+                <p className="text-sm font-medium text-gray-700">{user.full_name || `${user.first_name} ${user.last_name}` || user.username}</p>
+                <p className="text-xs text-gray-500">{user.email}</p>
+              </div>
+            )}
+
             {/* Drawer Navigation */}
             <nav className="flex flex-col p-6 gap-4">
               {navItems.map((item) => (
@@ -153,6 +217,31 @@ export default function Header() {
             {/* Drawer Buttons */}
             <div className="absolute bottom-0 left-0 right-0 p-6 border-t border-gray-200 bg-white">
               <div className="flex flex-col gap-3">
+                {isAuthenticated && user ? (
+                  <>
+                    <Link
+                      href="/profile"
+                      onClick={() => setIsDrawerOpen(false)}
+                      className="rounded-2xl border border-[#5D4FFF] bg-white px-4 py-3 text-center text-md font-semibold text-[#5D4FFF] transition hover:bg-[#f3f0ff]"
+                    >
+                      پروفایل
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="rounded-2xl bg-red-50 border border-red-200 px-4 py-3 text-center text-md font-semibold text-red-600 transition hover:bg-red-100"
+                    >
+                      خروج
+                    </button>
+                  </>
+                ) : (
+                  <Link
+                    href="/auth"
+                    onClick={() => setIsDrawerOpen(false)}
+                    className="rounded-2xl border border-[#5D4FFF] bg-white px-4 py-3 text-center text-md font-semibold text-[#5D4FFF] transition hover:bg-[#f3f0ff]"
+                  >
+                    ورود به حساب
+                  </Link>
+                )}
                 <a
                   href="#contact"
                   onClick={() => setIsDrawerOpen(false)}

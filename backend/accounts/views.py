@@ -33,6 +33,38 @@ class LoginView(TokenObtainPairView):
     """ورود و دریافت توکن JWT"""
     permission_classes = [permissions.AllowAny]
 
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        
+        # Add user data to response
+        if response.status_code == status.HTTP_200_OK:
+            try:
+                user = self.get_user_from_request(request)
+                response.data['user'] = UserSerializer(user).data
+            except:
+                pass
+        
+        return response
+
+    def get_user_from_request(self, request):
+        from django.contrib.auth import authenticate
+        username = request.data.get('username')
+        password = request.data.get('password')
+        
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+        
+        # Try to get user by username or email
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            try:
+                user = User.objects.get(email=username)
+            except User.DoesNotExist:
+                return None
+        
+        return user
+
 
 class ProfileView(generics.RetrieveUpdateAPIView):
     serializer_class = UserSerializer
