@@ -186,9 +186,9 @@ export default function LoginPage() {
       </div>
 
       {/* ─── RIGHT PANEL ────────────────────────────────── */}
-      <div className="flex flex-col justify-center w-full md:w-1/2 bg-[color:var(--color-background)] px-8 md:px-16 py-8 md:py-14 overflow-y-auto">
+      <div className="flex flex-col justify-center w-full md:w-1/2 bg-[color:var(--color-background)] px-8 md:px-16 pt-20 pb-8 md:pt-24 md:pb-14 overflow-y-auto">
 
-        <div className="mb-8">
+        <div className="mb-8 lg:mt-0 mt-50">
           <Image
             src="/clinic-icon.jpg"
             alt="clinic icon"
