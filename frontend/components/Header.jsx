@@ -6,9 +6,9 @@ import { useAuth } from "@/app/context/AuthContext";
 import { useRouter } from "next/navigation";
 
 const navItems = [
-  { label: "خانه", href: "#home" },
-  { label: "خدمات", href: "#services" },
-  { label: "درباره ما", href: "#about" },
+  { label: "خانه", href: "/" },
+  { label: "نوبت دهی مطب", href: "/appointment" },
+  { label: "درباره ما", href: "#aboutus" },
   { label: "تماس با ما", href: "#contact" },
 ];
 
@@ -42,13 +42,13 @@ export default function Header() {
           {/* Desktop Navigation */}
           <nav className="hidden items-center gap-8 md:flex">
             {navItems.map((item) => (
-              <a
+              <Link
                 key={item.label}
                 href={item.href}
                 className="text-md font-medium text-slate-600 transition hover:text-[#5D4FFF]"
               >
                 {item.label}
-              </a>
+              </Link>
             ))}
           </nav>
 

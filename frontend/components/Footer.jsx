@@ -83,7 +83,7 @@ export default function Footer() {
           </div>
 
           {/* Utility Pages */}
-          <div>
+          <div id="contact">
             <h4 className="mb-6 text-xl font-semibold text-foreground">
               صفحات کمکی
             </h4>

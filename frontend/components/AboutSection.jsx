@@ -30,6 +30,7 @@ export default function AboutSection() {
 
   return (
     <section
+      id="aboutus"
       ref={sectionRef}
       className={`flex flex-col md:flex-row items-center gap-12 px-6 py-16 max-w-6xl mx-auto mt-20 lg:mt-24 transition-all duration-700 ease-out ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
     >
