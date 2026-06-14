@@ -1,4 +1,4 @@
-from rest_framework import generics, permissions
+from rest_framework import filters, generics, permissions
 from .models import Specialty, DoctorProfile
 from .serializers import SpecialtySerializer, DoctorProfileSerializer
 

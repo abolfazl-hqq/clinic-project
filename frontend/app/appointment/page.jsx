@@ -1,26 +1,26 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ChevronDown, Search, ChevronLeft } from 'lucide-react';
-
-// --- Mock data ---
-const specialties = [
-  { id: 1, label: 'قلب و عروق', icon: '❤️' },
-  { id: 2, label: 'پوست و مو', icon: '🧴' },
-  { id: 3, label: 'ارتوپدی', icon: '🦴' },
-  { id: 4, label: 'چشم‌پزشکی', icon: '👁️' },
-  { id: 5, label: 'دندانپزشکی', icon: '🦷' },
-  { id: 6, label: 'اعصاب', icon: '🧠' },
-];
+import API from '../../lib/api';
 
 const cities = [
   'تهران', 'مشهد', 'اصفهان', 'شیراز', 'تبریز', 'کرج', 'قم', 'اهواز',
 ];
 
-const specialtyOptions = [
-  'قلب و عروق', 'پوست و مو', 'ارتوپدی', 'چشم‌پزشکی', 'دندانپزشکی',
-  'اعصاب', 'زنان و زایمان', 'کودکان', 'داخلی', 'گوش و حلق و بینی',
-];
+const ICON_MAP = {
+  'قلب و عروق': '❤️',
+  'پوست و مو': '🧴',
+  'ارتوپدی': '🦴',
+  'چشم‌پزشکی': '👁️',
+  'دندانپزشکی': '🦷',
+  'اعصاب': '🧠',
+  'زنان و زایمان': '🤰',
+  'کودکان': '👶',
+  'داخلی': '🩺',
+  'گوش و حلق و بینی': '👂',
+};
+
 
 // Specialty icons as simple SVG blobs (decorative circles with emoji)
 function SpecialtyCard({ label, icon }) {
@@ -28,7 +28,7 @@ function SpecialtyCard({ label, icon }) {
     <div className="flex flex-col items-center gap-3 cursor-pointer group">
       <div className="w-20 h-20 rounded-full bg-[rgba(93,79,255,0.08)] flex items-center justify-center text-3xl
                       group-hover:bg-[rgba(93,79,255,0.18)] transition-colors shadow-sm border border-[rgba(93,79,255,0.16)]">
-        {icon}
+        {icon || '⚕️'}
       </div>
       <span className="text-sm text-gray-700 font-medium text-center">{label}</span>
     </div>
@@ -76,8 +76,60 @@ function Dropdown({ placeholder, options, value, onChange }) {
 export default function SpecialtiesPage() {
   const [tab, setTab] = useState('service'); // 'service' | 'doctor'
   const [specialty, setSpecialty] = useState('');
+  const [doctorName, setDoctorName] = useState('');
   const [city, setCity] = useState('');
   const [moreFilters, setMoreFilters] = useState(false);
+  const [specialties, setSpecialties] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [doctorResults, setDoctorResults] = useState([]);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [searchError, setSearchError] = useState(null);
+
+  useEffect(() => {
+    let mounted = true;
+    API.get('/specialties/')
+      .then((res) => {
+        if (!mounted) return;
+        setSpecialties(res.data || []);
+        setLoading(false);
+      })
+      .catch((err) => {
+        if (!mounted) return;
+        console.error('Failed fetching specialties', err);
+        setError(err);
+        setLoading(false);
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const specialtyOptions = specialties.map((s) => s.name);
+
+  const handleSearch = () => {
+    if (tab !== 'doctor') {
+      return;
+    }
+
+    setSearchError(null);
+    setSearchLoading(true);
+    API.get('/specialties/doctors/', {
+      params: {
+        search: doctorName,
+      },
+    })
+      .then((res) => {
+        setDoctorResults(res.data || []);
+        setSearchLoading(false);
+      })
+      .catch((err) => {
+        console.error('Doctor search failed', err);
+        setSearchError(err);
+        setSearchLoading(false);
+      });
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -131,32 +183,92 @@ export default function SpecialtiesPage() {
             </button>
           </div>
 
-          {/* Specialty Field */}
-          <div className="mb-4">
-            <label className="block text-sm text-gray-700 mb-1.5 text-right">
-              به دنبال چه تخصصی هستید؟
-              <span className="text-red-500 mr-0.5">*</span>
-            </label>
-            <Dropdown
-              placeholder="تخصص، خدمت یا علائم بیماری را وارد کنید"
-              options={specialtyOptions}
-              value={specialty}
-              onChange={setSpecialty}
-            />
-          </div>
+          {tab === 'service' ? (
+            <>
+              {/* Specialty Field */}
+              <div className="mb-4">
+                <label className="block text-sm text-gray-700 mb-1.5 text-right">
+                  به دنبال چه تخصصی هستید؟
+                  <span className="text-red-500 mr-0.5">*</span>
+                </label>
+                <Dropdown
+                  placeholder="تخصص، خدمت یا علائم بیماری را وارد کنید"
+                  options={specialtyOptions}
+                  value={specialty}
+                  onChange={setSpecialty}
+                />
+              </div>
 
-          {/* City Field */}
-          <div className="mb-4">
-            <label className="block text-sm text-gray-700 mb-1.5 text-right">
-              در کدام شهر نوبت میخواهید؟
-            </label>
-            <Dropdown
-              placeholder="شهر موردنظر را انتخاب کنید"
-              options={cities}
-              value={city}
-              onChange={setCity}
-            />
-          </div>
+              {/* City Field */}
+              <div className="mb-4">
+                <label className="block text-sm text-gray-700 mb-1.5 text-right">
+                  در کدام شهر نوبت میخواهید؟
+                </label>
+                <Dropdown
+                  placeholder="شهر موردنظر را انتخاب کنید"
+                  options={cities}
+                  value={city}
+                  onChange={setCity}
+                />
+              </div>
+            </>
+          ) : (
+            <div className="mb-4">
+              <label className="block text-sm text-gray-700 mb-1.5 text-right">
+                نام پزشک را وارد کنید
+                <span className="text-red-500 mr-0.5">*</span>
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={doctorName}
+                  onChange={(e) => setDoctorName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleSearch();
+                    }
+                  }}
+                  placeholder="نام پزشک مورد نظر را بنویسید"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-white text-right text-gray-700 text-sm
+                             focus:outline-none focus:ring-2 focus:ring-[rgba(93,79,255,0.24)] transition"
+                />
+
+                {((doctorResults.length > 0 && doctorName) || searchLoading || searchError || (doctorName && doctorResults.length === 0)) && (
+                  <div className="absolute left-0 right-0 mt-2 bg-white border border-gray-200 rounded-2xl shadow-lg z-20">
+                    {searchLoading && (
+                      <div className="p-4 text-center text-gray-500">در حال جستجوی پزشک...</div>
+                    )}
+                    {searchError && (
+                      <div className="p-4 text-center text-red-500">خطا در جستجوی پزشک</div>
+                    )}
+                    {!searchLoading && !searchError && doctorName && doctorResults.length === 0 && (
+                      <div className="p-4 text-center text-gray-500">هیچ پزشکی با این نام پیدا نشد.</div>
+                    )}
+                    {!searchLoading && !searchError && doctorResults.length > 0 && (
+                      <ul className="divide-y divide-gray-100">
+                        {doctorResults.map((doctor) => (
+                          <li key={doctor.id} className="py-3 px-4 hover:bg-gray-50">
+                            <button
+                              type="button"
+                              className="w-full text-right"
+                              onClick={() => {
+                                setDoctorName(doctor.user_full_name || '');
+                                setDoctorResults([]);
+                              }}
+                            >
+                              <div className="font-medium text-gray-800">{doctor.user_full_name || 'دکتر'}</div>
+                              <div className="text-sm text-gray-600">{doctor.specialty_name || 'تخصص نامشخص'}</div>
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* More Filters */}
           <button
@@ -180,18 +292,19 @@ export default function SpecialtiesPage() {
           {/* Search Button */}
           <button
             type="button"
+            onClick={handleSearch}
             className="w-full py-3.5 bg-[var(--primary)] hover:brightness-95 active:brightness-90
                        text-[var(--primary-foreground)] font-semibold rounded-xl transition flex items-center
                        justify-center gap-2 text-base shadow-md"
           >
             <Search size={18} />
-            جستجوی نوبت
+            {tab === 'doctor' ? 'جستجوی پزشک' : 'جستجوی نوبت'}
           </button>
         </div>
       </div>
 
       {/* ── Specialty List Section ── */}
-      <section className="max-w-5xl mx-auto px-4 pt-12 pb-12">
+      <section className="max-w-5xl mx-auto px-4 pt-24 pb-12">
         {/* Section header */}
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-gray-800 text-xl font-bold">لیست انواع تخصص های پزشکی</h2>
@@ -203,8 +316,14 @@ export default function SpecialtiesPage() {
 
         {/* Grid of specialty cards */}
         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-6">
-          {specialties.map((s) => (
-            <SpecialtyCard key={s.id} label={s.label} icon={s.icon} />
+          {loading && (
+            <div className="col-span-full text-center text-gray-500">در حال بارگذاری...</div>
+          )}
+          {error && (
+            <div className="col-span-full text-center text-red-500">خطا در بارگذاری تخصص‌ها</div>
+          )}
+          {!loading && !error && specialties.map((s) => (
+            <SpecialtyCard key={s.id} label={s.name} icon={ICON_MAP[s.name] || s.icon || '⚕️'} />
           ))}
         </div>
       </section>
