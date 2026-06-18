@@ -24,7 +24,15 @@ export default function ServicesSlider() {
 
         const data = await response.json();
         console.log(data);
-        setClinics(Array.isArray(data) ? data : []);
+        const clinicList = Array.isArray(data)
+          ? data
+          : Array.isArray(data?.results)
+          ? data.results
+          : Array.isArray(data?.clinics)
+          ? data.clinics
+          : [];
+
+        setClinics(clinicList);
       } catch (fetchError) {
         console.error('Error fetching clinics:', fetchError);
         setError('خطای دریافت اطلاعات کلینیک. لطفاً دوباره تلاش کنید.');
