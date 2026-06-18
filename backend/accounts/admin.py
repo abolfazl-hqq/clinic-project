@@ -5,7 +5,6 @@ from .models import User
 
 
 class PatientFilter(admin.SimpleListFilter):
-    """فیلتر برای نمایش فقط بیماران"""
     title = 'نقش کاربر'
     parameter_name = 'role'
 
@@ -24,11 +23,6 @@ class PatientFilter(admin.SimpleListFilter):
 
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
-    """
-    پنل مدیریت کاربران - فقط بیماران و ادمین‌ها
-    پزشکان از طریق specialties/doctorprofile مدیریت میشن
-    """
-
     list_display = ('username', 'get_full_name', 'phone', 'role_badge', 'is_active', 'date_joined')
     list_filter = (PatientFilter, 'is_active')
     search_fields = ('username', 'first_name', 'last_name', 'phone', 'email')
@@ -56,7 +50,6 @@ class CustomUserAdmin(UserAdmin):
     readonly_fields = ('last_login', 'date_joined')
 
     def get_queryset(self, request):
-        """فقط کاربران غیر پزشک نمایش داده میشن - پزشکان از DoctorProfile مدیریت میشن"""
         return super().get_queryset(request).exclude(role='doctor')
 
     def role_badge(self, obj):
@@ -76,8 +69,10 @@ class CustomUserAdmin(UserAdmin):
             '<span style="background:{};color:white;padding:2px 8px;border-radius:4px;font-size:12px">{}</span>',
             color, label
         )
+
     role_badge.short_description = 'نقش'
 
     def get_full_name(self, obj):
         return obj.get_full_name() or '—'
+
     get_full_name.short_description = 'نام کامل'

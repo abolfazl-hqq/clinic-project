@@ -11,11 +11,9 @@ from specialties.models import DoctorProfile
 
 
 class RegisterView(generics.CreateAPIView):
-    """ثبت‌نام کاربر جدید"""
     serializer_class = RegisterSerializer
     permission_classes = [permissions.AllowAny]
 
-    # FIX 5: Rate limit - حداکثر 5 ثبت‌نام در دقیقه از یک IP
     @method_decorator(ratelimit(key='ip', rate='5/m', method='POST', block=True))
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -38,10 +36,8 @@ class RegisterView(generics.CreateAPIView):
 
 
 class LoginView(TokenObtainPairView):
-    """ورود و دریافت توکن JWT"""
     permission_classes = [permissions.AllowAny]
 
-    # FIX 5: Rate limit - حداکثر 10 تلاش لاگین در دقیقه از یک IP
     @method_decorator(ratelimit(key='ip', rate='10/m', method='POST', block=True))
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
@@ -86,10 +82,6 @@ class LoginView(TokenObtainPairView):
 
 
 class LogoutView(APIView):
-    """
-    FIX 3: خروج درست با blacklist کردن Refresh Token
-    بعد از logout، توکن دیگه قابل استفاده نیست
-    """
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
@@ -111,7 +103,6 @@ class LogoutView(APIView):
 
 
 class ProfileView(generics.RetrieveUpdateAPIView):
-    """مشاهده و ویرایش پروفایل کاربر لاگین شده"""
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
 

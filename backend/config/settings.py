@@ -4,17 +4,11 @@ import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# ============================================================
-# FIX 1: SECRET_KEY از environment variable خونده میشه
-# ============================================================
 SECRET_KEY = os.environ.get(
     'DJANGO_SECRET_KEY',
-    'django-insecure-@7@#wnf9q9v9rth@_g0u+65oc=bn(6gpt#2!190!hw6eggx97c'  # فقط برای dev
+    'django-insecure-@7@#wnf9q9v9rth@_g0u+65oc=bn(6gpt#2!190!hw6eggx97c'
 )
 
-# ============================================================
-# FIX 2: DEBUG و ALLOWED_HOSTS از environment
-# ============================================================
 DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = os.environ.get(
@@ -33,7 +27,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'rest_framework_simplejwt',
-    'rest_framework_simplejwt.token_blacklist',  # FIX 3: Refresh Token Blacklist
+    'rest_framework_simplejwt.token_blacklist',
     'accounts',
     'clinics',
     'specialties',
@@ -94,17 +88,13 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = 'static/'
-# فقط اگه پوشه static وجود داشت اضافه میشه
 _STATIC_DIR = BASE_DIR / 'static'
 STATICFILES_DIRS = [_STATIC_DIR] if _STATIC_DIR.exists() else []
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# ============================================================
-# FIX 4: CORS - فقط origin های مجاز
-# ============================================================
-CORS_ALLOW_ALL_ORIGINS = DEBUG  # در dev همه، در production فقط لیست زیر
+CORS_ALLOW_ALL_ORIGINS = DEBUG
 CORS_ALLOWED_ORIGINS = os.environ.get(
     'CORS_ALLOWED_ORIGINS',
     'http://localhost:3000,http://127.0.0.1:3000'
@@ -123,23 +113,17 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 20,
 }
 
-# ============================================================
-# FIX 3: JWT با Blacklist برای logout درست
-# ============================================================
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),  # کوتاه‌تر از قبل (بود 1 روز)
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
-    'ROTATE_REFRESH_TOKENS': True,  # هر بار refresh، توکن جدید
-    'BLACKLIST_AFTER_ROTATION': True,  # توکن قدیمی blacklist میشه
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
     'UPDATE_LAST_LOGIN': True,
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
 AUTH_USER_MODEL = 'accounts.User'
 
-# ============================================================
-# FIX 5: Cache برای Rate Limiting
-# ============================================================
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
@@ -147,9 +131,6 @@ CACHES = {
     }
 }
 
-# ============================================================
-# FIX 6: تنظیمات امنیتی Production
-# ============================================================
 if not DEBUG:
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True

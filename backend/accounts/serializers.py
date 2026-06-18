@@ -26,11 +26,9 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class RegisterSerializer(serializers.ModelSerializer):
-    """ثبت‌نام کاربر جدید (بیمار یا پزشک)"""
     password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
     password2 = serializers.CharField(write_only=True, required=True)
 
-    # فیلدهای اضافی مخصوص پزشک (اختیاری برای بیمار)
     specialty_id = serializers.IntegerField(write_only=True, required=False, allow_null=True)
     consultation_fee = serializers.DecimalField(max_digits=10, decimal_places=2, required=False, allow_null=True)
     gender = serializers.ChoiceField(choices=[('male', 'آقا'), ('female', 'خانم')], required=False, allow_blank=True)
@@ -55,7 +53,6 @@ class RegisterSerializer(serializers.ModelSerializer):
             print("❌ [validate] Passwords don't match")
             raise serializers.ValidationError({"password": "رمز عبور با تکرار آن مطابقت ندارد"})
 
-        # اگه نقش پزشک هست، فیلدهای مربوطه رو چک کن
         if attrs.get('role') == 'doctor':
             print("📥 [validate] Role is doctor, checking required fields...")
             if not attrs.get('license_number'):
@@ -76,10 +73,8 @@ class RegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         print("📥 [create] Starting create with validated_data:", validated_data)
 
-        # حذف فیلد تایید رمز
         validated_data.pop('password2')
 
-        # استخراج فیلدهای پزشک
         specialty_id = validated_data.pop('specialty_id', None)
         consultation_fee = validated_data.pop('consultation_fee', None)
         gender = validated_data.pop('gender', None)
@@ -96,16 +91,13 @@ class RegisterSerializer(serializers.ModelSerializer):
         role = validated_data.get('role', 'patient')
         print(f"📥 [create] Role: {role}")
 
-        # اگه کاربر نقش پزشک داره، فقط is_verified=False بذار (نقش رو عوض نکن)
         if role == 'doctor':
             validated_data['is_verified'] = False
             print("📥 [create] Set is_verified=False for doctor")
 
-        # ساخت کاربر
         user = User.objects.create_user(**validated_data)
         print(f"✅ [create] User created: {user.username} (ID: {user.id})")
 
-        # اگه کاربر پزشک هست و اطلاعات لازم رو داده، یه DoctorProfile بساز/به‌روزرسانی کن
         if role == 'doctor':
             print("📥 [create] Creating/updating DoctorProfile for doctor...")
             specialty = None

@@ -5,7 +5,7 @@ from .views import RegisterView, LoginView, LogoutView, ProfileView
 urlpatterns = [
     path('register/', RegisterView.as_view(), name='register'),
     path('login/', LoginView.as_view(), name='login'),
-    path('logout/', LogoutView.as_view(), name='logout'),          # FIX 3: logout واقعی
+    path('logout/', LogoutView.as_view(), name='logout'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token-refresh'),
     path('profile/', ProfileView.as_view(), name='profile'),
 ]

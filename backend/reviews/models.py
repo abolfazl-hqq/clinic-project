@@ -3,8 +3,6 @@ from django.conf import settings
 
 
 class Review(models.Model):
-    """نظرات و امتیازات بیماران برای پزشکان"""
-
     RATING_CHOICES = (
         (1, '۱ - خیلی ضعیف'),
         (2, '۲ - ضعیف'),

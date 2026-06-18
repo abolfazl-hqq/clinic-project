@@ -6,15 +6,13 @@ from .serializers import SpecialtySerializer, DoctorProfileSerializer
 
 
 class SpecialtyListView(generics.ListAPIView):
-    """لیست تمام تخصص‌ها"""
     queryset = Specialty.objects.all()
     serializer_class = SpecialtySerializer
     permission_classes = [permissions.AllowAny]
-    pagination_class = None  # تخصص‌ها نیاز به pagination ندارن
+    pagination_class = None
 
 
 class DoctorListView(generics.ListAPIView):
-    """لیست پزشکان تأیید شده با قابلیت جستجو و فیلتر"""
     serializer_class = DoctorProfileSerializer
     permission_classes = [permissions.AllowAny]
 
@@ -45,7 +43,6 @@ class DoctorListView(generics.ListAPIView):
     ordering = ['user__first_name']
 
     def get_queryset(self):
-        # FIX 7: select_related برای جلوگیری از N+1 query
         base_qs = DoctorProfile.objects.select_related(
             'user',
             'specialty',

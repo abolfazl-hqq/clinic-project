@@ -4,7 +4,6 @@ from .serializers import SupportTicketSerializer
 
 
 class TicketCreateView(generics.CreateAPIView):
-    """ایجاد تیکت پشتیبانی جدید"""
     serializer_class = SupportTicketSerializer
     permission_classes = [permissions.IsAuthenticated]
 

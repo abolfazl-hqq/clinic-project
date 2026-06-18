@@ -6,21 +6,18 @@ from .serializers import AppointmentSerializer, DoctorAvailabilitySerializer
 
 
 class IsPatient(permissions.BasePermission):
-    """فقط کاربران با نقش بیمار"""
 
     def has_permission(self, request, view):
         return request.user.is_authenticated and getattr(request.user, 'role', None) == 'patient'
 
 
 class IsDoctor(permissions.BasePermission):
-    """فقط کاربران با نقش پزشک"""
 
     def has_permission(self, request, view):
         return request.user.is_authenticated and getattr(request.user, 'role', None) == 'doctor'
 
 
 class AppointmentCreateView(generics.CreateAPIView):
-    """رزرو نوبت جدید توسط بیمار"""
     serializer_class = AppointmentSerializer
     permission_classes = [IsPatient]
 
@@ -29,12 +26,10 @@ class AppointmentCreateView(generics.CreateAPIView):
 
 
 class PatientAppointmentsView(generics.ListAPIView):
-    """مشاهده لیست نوبت‌های بیمار لاگین شده"""
     serializer_class = AppointmentSerializer
     permission_classes = [IsPatient]
 
     def get_queryset(self):
-        # FIX 7: select_related برای جلوگیری از N+1 query
         return Appointment.objects.filter(
             patient=self.request.user
         ).select_related(
@@ -45,12 +40,10 @@ class PatientAppointmentsView(generics.ListAPIView):
 
 
 class DoctorAppointmentsView(generics.ListAPIView):
-    """مشاهده لیست نوبت‌های پزشک لاگین شده"""
     serializer_class = AppointmentSerializer
     permission_classes = [IsDoctor]
 
     def get_queryset(self):
-        # FIX 7: select_related برای جلوگیری از N+1 query
         return Appointment.objects.filter(
             doctor__user=self.request.user
         ).select_related(
@@ -61,7 +54,6 @@ class DoctorAppointmentsView(generics.ListAPIView):
 
 
 class AppointmentCancelView(generics.UpdateAPIView):
-    """لغو نوبت توسط بیمار یا پزشک"""
     serializer_class = AppointmentSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -95,7 +87,6 @@ class AppointmentCancelView(generics.UpdateAPIView):
 
 
 class DoctorAvailabilityView(generics.ListAPIView):
-    """دریافت ساعات کاری یک پزشک خاص"""
     serializer_class = DoctorAvailabilitySerializer
     permission_classes = [permissions.AllowAny]
 

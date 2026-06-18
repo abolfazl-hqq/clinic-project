@@ -48,7 +48,6 @@ class DoctorProfile(models.Model):
     clinic = models.ForeignKey('clinics.Clinic', on_delete=models.SET_NULL, null=True, blank=True,
                                related_name='doctors', verbose_name='کلینیک')
 
-    # فیلدهای مستقل برای مطب شخصی پزشک
     city = models.CharField(max_length=100, blank=True, null=True, verbose_name="شهر")
     address = models.TextField(blank=True, null=True, verbose_name="آدرس مطب")
 

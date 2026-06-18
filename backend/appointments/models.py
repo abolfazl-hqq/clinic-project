@@ -65,15 +65,11 @@ class Appointment(models.Model):
     updated_at = models.DateTimeField(auto_now=True, verbose_name="تاریخ بروزرسانی")
 
     def clean(self):
-        # FIX 1: چک کردن تاریخ نوبت در آینده باشه
         if self.appointment_date and self.appointment_date < timezone.now().date():
             raise ValidationError("تاریخ نوبت نمیتواند در گذشته باشد.")
 
-        # FIX 2: چک کردن ساعت کاری پزشک
         if self.appointment_date and self.appointment_time and self.doctor_id:
-            # روز هفته به فرمت ایرانی (شنبه=0)
             weekday = self.appointment_date.weekday()  # Mon=0..Sun=6
-            # تبدیل به فرمت ایرانی: شنبه=0 ... جمعه=6
             iranian_day = (weekday + 2) % 7
 
             availability = DoctorAvailability.objects.filter(
@@ -97,5 +93,4 @@ class Appointment(models.Model):
         verbose_name = "نوبت"
         verbose_name_plural = "نوبت‌ها"
         ordering = ['-appointment_date', 'appointment_time']
-        # FIX 1: جلوگیری از double booking در سطح database
         unique_together = ['doctor', 'appointment_date', 'appointment_time']

@@ -28,14 +28,12 @@ class AppointmentSerializer(serializers.ModelSerializer):
         appointment_time = attrs.get('appointment_time')
 
         if doctor and appointment_date and appointment_time:
-            # FIX 1: چک double booking - نوبت تکراری نباشه
             qs = Appointment.objects.filter(
                 doctor=doctor,
                 appointment_date=appointment_date,
                 appointment_time=appointment_time,
                 status__in=['pending', 'confirmed']
             )
-            # هنگام update، instance فعلی رو exclude کن
             if self.instance:
                 qs = qs.exclude(pk=self.instance.pk)
 
@@ -44,20 +42,17 @@ class AppointmentSerializer(serializers.ModelSerializer):
                     "این نوبت قبلاً رزرو شده است. لطفاً ساعت دیگری انتخاب کنید."
                 )
 
-            # FIX 2: چک تایید بودن پزشک
             if not doctor.is_verified:
                 raise serializers.ValidationError("این پزشک هنوز تایید نشده است.")
 
         return attrs
 
     def create(self, validated_data):
-        # FIX 1: استفاده از select_for_update برای جلوگیری از race condition
         with transaction.atomic():
             doctor = validated_data['doctor']
             appointment_date = validated_data['appointment_date']
             appointment_time = validated_data['appointment_time']
 
-            # Lock کردن رکوردهای مرتبط برای جلوگیری از همزمانی
             conflicting = Appointment.objects.select_for_update().filter(
                 doctor=doctor,
                 appointment_date=appointment_date,
