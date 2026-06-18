@@ -36,26 +36,30 @@ class DoctorListView(generics.ListAPIView):
         'specialty__name',
         'city',
         'clinic__name',
-        'clinic__city'
+        'clinic__city',
+        'bio',
     ]
 
     ordering_fields = ['consultation_fee', 'experience_years', 'user__first_name']
     ordering = ['user__first_name']
 
     def get_queryset(self):
-        base_qs = DoctorProfile.objects.select_related(
+        base_qs = DoctorProfile.objects.filter(
+            is_verified=True
+        ).select_related(
             'user',
             'specialty',
-            'clinic'
+            'clinic',
         )
 
         user = self.request.user
         if user.is_authenticated and user.is_staff:
-            return base_qs.all()
+            return DoctorProfile.objects.select_related('user', 'specialty', 'clinic')
 
-        public_qs = base_qs.filter(is_verified=True)
         if user.is_authenticated and getattr(user, 'role', None) == 'doctor':
-            own_qs = base_qs.filter(user=user)
-            return (public_qs | own_qs).distinct()
+            own_qs = DoctorProfile.objects.filter(
+                user=user
+            ).select_related('user', 'specialty', 'clinic')
+            return (base_qs | own_qs).distinct()
 
-        return public_qs
+        return base_qs
