@@ -4,7 +4,7 @@ A full-stack medical appointment booking system with a modern Next.js frontend a
 
 ## Overview
 
-![Website Overview](./overview.png)
+![Website Overview](./overview.jpg)
 
 
 ## Project Structure
