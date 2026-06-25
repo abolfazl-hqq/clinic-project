@@ -2,9 +2,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Image from "next/image";
 import BackgroundRing from './BackgroundRing';
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://127.0.0.1:8000';
-const CLINICS_API_URL = `${API_BASE_URL}/api/clinics/`;
+import API from '@/lib/api';
 
 export default function ServicesSlider() {
   const [clinics, setClinics] = useState([]);
@@ -17,13 +15,8 @@ export default function ServicesSlider() {
   useEffect(() => {
     const fetchClinics = async () => {
       try {
-        const response = await fetch(CLINICS_API_URL);
-        if (!response.ok) {
-          throw new Error(`API request failed with status ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log(data);
+        const response = await API.get('/clinics/');
+        const data = response.data;
         const clinicList = Array.isArray(data)
           ? data
           : Array.isArray(data?.results)
@@ -128,10 +121,14 @@ export default function ServicesSlider() {
             style={{ scrollbarWidth: 'none' }}
           >
             {displayClinics.map((clinic) => {
-              const title = clinic.name || clinic.title;
+              const title = clinic.name || clinic.title || 'کلینیک';
               const location = clinic.city ? `${clinic.city}${clinic.neighborhood ? `، ${clinic.neighborhood}` : ''}` : '';
               const description = clinic.description || clinic.address || 'خدمات پزشکی با کیفیت بالا';
-              const imageUrl = clinic.image ? (clinic.image.startsWith('/') ? `${API_BASE_URL}${clinic.image}` : clinic.image) : null;
+              const imageUrl = clinic.image
+                ? clinic.image.startsWith('http')
+                  ? clinic.image
+                  : `${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://127.0.0.1:8000'}${clinic.image}`
+                : null;
 
               return (
                 <div 

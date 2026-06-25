@@ -1,6 +1,7 @@
 "use client";
 
 import {useState, useEffect} from 'react';
+import {useRouter} from 'next/navigation';
 import {ChevronDown, Search, ChevronLeft} from 'lucide-react';
 import API from '../../lib/api';
 
@@ -73,6 +74,7 @@ function Dropdown({placeholder, options, value, onChange}) {
 }
 
 export default function SpecialtiesPage() {
+    const router = useRouter();
     const [tab, setTab] = useState('service');
     const [specialty, setSpecialty] = useState('');
     const [doctorName, setDoctorName] = useState('');
@@ -108,28 +110,16 @@ export default function SpecialtiesPage() {
     const specialtyOptions = specialties.map((s) => s.name);
 
     const handleSearch = () => {
-        setSearchError(null);
-        setSearchLoading(true);
-        setHasSearched(true);
+        const params = new URLSearchParams();
 
-        const params = {};
         if (tab === 'doctor') {
-            params.search = doctorName;
+            if (doctorName) params.set('search', doctorName);
         } else {
-            if (specialty) params['specialty__name__icontains'] = specialty;
-            if (city) params['city__icontains'] = city;
+            if (specialty) params.set('specialty', specialty);
+            if (city) params.set('city', city);
         }
 
-        API.get('/specialties/doctors/', {params})
-            .then((res) => {
-                setDoctorResults(res.data?.results || res.data || []);
-                setSearchLoading(false);
-            })
-            .catch((err) => {
-                console.error('Search failed', err);
-                setSearchError(err);
-                setSearchLoading(false);
-            });
+        router.push(`/doctors${params.toString() ? `?${params.toString()}` : ''}`);
     };
 
     return (
