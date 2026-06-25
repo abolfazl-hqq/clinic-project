@@ -5,7 +5,6 @@ from .serializers import ReviewSerializer
 
 
 class ReviewCreateView(generics.CreateAPIView):
-    """ثبت نظر و امتیاز برای پزشک (فقط بیماران)"""
     serializer_class = ReviewSerializer
     permission_classes = [permissions.IsAuthenticated]
 
