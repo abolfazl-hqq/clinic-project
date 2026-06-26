@@ -1,57 +1,52 @@
-import Image from "next/image";
+import { MapPin, Star } from "lucide-react";
+
+const fallbackImage = "/doctor-placeholder.jpg";
+
+function formatPrice(value) {
+  if (!value) return "تماس بگیرید";
+
+  return `${Number(value).toLocaleString("fa-IR")} تومان`;
+}
 
 export default function DoctorCard({ doctor }) {
+  const doctorName = doctor.user_full_name || doctor.name || "پزشک";
+  const specialtyName = doctor.specialty_name || doctor.title || "تخصص نامشخص";
+  const city = doctor.city || doctor.clinic_name || "تهران";
+  const visitType = doctor.visit_type === "online" ? "آنلاین" : doctor.visit_type === "in_person" ? "حضوری" : "حضوری/آنلاین";
+
   return (
-    <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
+    <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+      <img
+        src={doctor.image || fallbackImage}
+        alt={doctorName}
+        className="h-[360px] w-full object-cover"
+      />
+
       <div className="p-6">
-        <div className="flex flex-col gap-5 md:flex-row">
-          <div className="shrink-0">
-            <Image
-              src={doctor.image || "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=300&q=80"}
-              alt={doctor.user_full_name || "پزشک"}
-              width={112}
-              height={112}
-              className="h-28 w-28 rounded-full object-cover"
-            />
-          </div>
+        <h3 className="text-2xl font-bold">{doctorName}</h3>
+        <p className="text-gray-500 mt-2">{specialtyName}</p>
 
-          <div className="flex-1">
-            <div className="mb-2 flex items-start justify-between gap-3">
-              <div>
-                <h2 className="text-xl font-bold text-gray-800">
-                  {doctor.user_full_name || "دکتر"}
-                </h2>
-                <p className="mt-1 text-gray-500">{doctor.specialty_name || "تخصص نامشخص"}</p>
-              </div>
-              <button className="text-sm font-medium text-gray-600">مشاهده پروفایل</button>
-            </div>
-
-            <div className="mb-4 flex flex-wrap gap-4 text-sm">
-              <span className="text-gray-600">{doctor.city || "شهر نامشخص"}</span>
-              <span className="text-blue-600">{doctor.experience_years ? `${doctor.experience_years} سال سابقه` : "سابقه ثبت نشده"}</span>
-              <span className="text-green-600">{doctor.consultation_fee ? `${Number(doctor.consultation_fee).toLocaleString("fa")} تومان` : "هزینه ثبت نشده"}</span>
-            </div>
-
-            <div className="mb-4 rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-700">
-              {doctor.clinic_name ? `کلینیک: ${doctor.clinic_name}` : "پزشک مورد تایید است."}
-            </div>
-
-            <div className="mb-3 text-gray-600">{doctor.address || "آدرس مطب ثبت نشده است."}</div>
-
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="text-sm text-gray-500">
-                {doctor.visit_type === "online"
-                  ? "ویزیت آنلاین"
-                  : doctor.visit_type === "in_person"
-                    ? "ویزیت حضوری"
-                    : "ویزیت حضوری و آنلاین"}
-              </div>
-              <button className="rounded-lg bg-blue-600 px-5 py-2 text-white transition hover:bg-blue-700">
-                نوبت مطب بگیرید
-              </button>
-            </div>
-          </div>
+        <div className="flex items-center gap-2 mt-4">
+          <Star className="fill-yellow-400 text-yellow-400" size={18} />
+          <span>4.9</span>
+          <span className="text-gray-400">(120 نظر)</span>
         </div>
+
+        <div className="mt-5 space-y-2 text-sm text-gray-600">
+          <div className="flex items-center gap-2">
+            <MapPin size={16} className="text-[#5E5CE6]" />
+            <span>{city}</span>
+          </div>
+          <div>نوع ویزیت: {visitType}</div>
+          <div>هزینه مشاوره: {formatPrice(doctor.consultation_fee)}</div>
+          <div>سابقه: {doctor.experience_years || 0} سال</div>
+        </div>
+
+        <button className="w-full mt-6 rounded-xl bg-[#5E5CE6] text-white py-3 hover:bg-[#4d4ad9] transition">
+          درخواست نوبت آنلاین
+        </button>
+
+        <button className="w-full mt-4 text-[#5E5CE6] font-semibold">view profile →</button>
       </div>
     </div>
   );
